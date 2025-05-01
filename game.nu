@@ -3,7 +3,7 @@
 
 # NOTE: scalars are off cuz i'm counting by pennies instead of dollars and cents
 
-let carriage_return = "\n\r"
+const carriage_return = "\n\r"
 
 # Resets cursor to home position and hides it to prevent visual distraction
 def reset-cursor [] {
