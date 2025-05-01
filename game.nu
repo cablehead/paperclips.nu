@@ -10,6 +10,7 @@ def make-paperclip [state, amount: int] {
   $new_state.paperclips.total += $amount
   $new_state.paperclips.stock += $amount
   $new_state.wire.length -= $amount
+  $new_state.paperclips.current_second_clips += $amount  # Add this line
   $new_state
 }
 
@@ -97,8 +98,10 @@ def main [] {
       total: 0
       stock: 0
       price: 25
-      rate: -1
+      rate: 0  # Changed from -1 to 0: This will show last second's rate
+      current_second_clips: 0  # Add: Accumulator for current second
     }
+    last_second_timestamp: (date now)  # Add: Track when current second started
     market: {
       demand: 0
       level: 1
@@ -156,6 +159,14 @@ def main [] {
       clear
     }
     let prev = date now
+
+    # Check if a second has passed and roll over counters
+    let now = date now
+    if ($now - $state.last_second_timestamp) >= 1sec {
+      $state.paperclips.rate = $state.paperclips.current_second_clips
+      $state.paperclips.current_second_clips = 0
+      $state.last_second_timestamp = $now
+    }
 
     if (($state.paperclips.total > 9) and ($state.autoclippers.count < 1)) and not $state.autoclippers.unlocked {
       $state.autoclippers.unlocked = true
